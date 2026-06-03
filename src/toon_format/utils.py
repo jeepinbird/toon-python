@@ -1,15 +1,16 @@
 # Copyright (c) 2025 TOON Format Organization
 # SPDX-License-Identifier: MIT
-"""JSON interop helpers for TOON.
+"""Convenience helpers built on top of the core encode/decode API.
 
-Convenience wrappers for working directly with JSON strings. Data often arrives
-as raw JSON text -- LLM tool outputs, REST API responses, log files -- where the
-JSON `null` keyword has no direct TOON equivalent and must become Python `None`
-before encoding.
+A shared home for small, public utilities that complement `encode()` and
+`decode()` without belonging to the core pipeline.
 
-`encode()` already renders `None` as the TOON `null` literal, and the standard
-library's `json.loads` already maps `null` to `None`, so these helpers simply
-remove the boilerplate of wiring the two together for the common
+Currently this provides JSON-string interop. Data often arrives as raw JSON text
+-- LLM tool outputs, REST API responses, log files -- where the JSON `null`
+keyword has no direct TOON equivalent and must become Python `None` before
+encoding. `encode()` already renders `None` as the TOON `null` literal, and the
+standard library's `json.loads` already maps `null` to `None`, so these helpers
+simply remove the boilerplate of wiring the two together for the common
 JSON-string -> TOON path.
 """
 
