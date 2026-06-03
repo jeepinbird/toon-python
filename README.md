@@ -1,9 +1,6 @@
 # TOON Format for Python
 
-[![Tests](https://github.com/toon-format/toon-python/actions/workflows/test.yml/badge.svg)](https://github.com/toon-format/toon-python/actions)
-[![Python Versions](https://img.shields.io/pypi/pyversions/toon_format.svg)](https://pypi.org/project/toon_format/)
-
-> **⚠️ Beta Status (v0.9.x):** This library is in active development and working towards spec compliance. Beta published to PyPI. API may change before 1.0.0 release.
+[![Tests](https://github.com/jeepinbird/toon-python/actions/workflows/test.yml/badge.svg)](https://github.com/jeepinbird/toon-python/actions)
 
 Compact, human-readable serialization format for LLM contexts with **30-60% token reduction** vs JSON. Combines YAML-like indentation with CSV-like tabular arrays. Working towards full compatibility with the [official TOON specification](https://github.com/toon-format/spec).
 
