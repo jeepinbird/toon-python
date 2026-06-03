@@ -82,12 +82,21 @@ Tell the model:
 
 ## Measuring Token Savings
 
-Before integrating TOON with your LLM application, measure actual savings for your data:
+`toon_format` itself has no runtime dependencies and does not count tokens. To
+measure actual savings for your data, encode with `toon_format` and tokenize
+the result with your model's tokenizer (e.g. [`tiktoken`](https://github.com/openai/tiktoken)).
 
 ### Basic Measurement
 
 ```python
-from toon_format import estimate_savings
+import json
+import tiktoken
+from toon_format import encode
+
+enc = tiktoken.get_encoding("o200k_base")  # gpt-4o / gpt-5 family
+
+def count_tokens(text: str) -> int:
+    return len(enc.encode(text))
 
 # Your actual data structure
 user_data = {
@@ -98,103 +107,32 @@ user_data = {
     ]
 }
 
-# Compare formats
-result = estimate_savings(user_data)
-print(f"JSON: {result['json_tokens']} tokens")
-print(f"TOON: {result['toon_tokens']} tokens")
-print(f"Savings: {result['savings_percent']:.1f}%")
-# JSON: 112 tokens
-# TOON: 68 tokens
-# Savings: 39.3%
-```
+json_tokens = count_tokens(json.dumps(user_data, ensure_ascii=False))
+toon_tokens = count_tokens(encode(user_data))
+savings = (json_tokens - toon_tokens) / json_tokens * 100
 
-### Cost Estimation
-
-Calculate actual dollar savings based on your API usage:
-
-```python
-from toon_format import estimate_savings
-
-# Your typical prompt data
-prompt_data = {
-    "context": [
-        {"role": "system", "content": "You are a helpful assistant"},
-        {"role": "user", "content": "Analyze this data"}
-    ],
-    "data": [
-        {"id": i, "value": f"Item {i}", "score": i * 10}
-        for i in range(1, 101)  # 100 items
-    ]
-}
-
-result = estimate_savings(prompt_data["data"])
-
-# GPT-5 pricing (example: $0.01 per 1K tokens)
-cost_per_1k = 0.01
-json_cost = (result['json_tokens'] / 1000) * cost_per_1k
-toon_cost = (result['toon_tokens'] / 1000) * cost_per_1k
-
-print(f"JSON cost per request: ${json_cost:.4f}")
-print(f"TOON cost per request: ${toon_cost:.4f}")
-print(f"Savings per request: ${json_cost - toon_cost:.4f}")
-print(f"Savings per 10,000 requests: ${(json_cost - toon_cost) * 10000:.2f}")
-```
-
-### Detailed Comparison
-
-Get a formatted report for documentation or analysis:
-
-```python
-from toon_format import compare_formats
-
-api_response = {
-    "status": "success",
-    "results": [
-        {"id": 1, "score": 0.95, "category": "A"},
-        {"id": 2, "score": 0.87, "category": "B"},
-        {"id": 3, "score": 0.92, "category": "A"}
-    ],
-    "total": 3
-}
-
-print(compare_formats(api_response))
-# Format Comparison
-# ────────────────────────────────────────────────
-# Format      Tokens    Size (chars)
-# JSON            78             189
-# TOON            48             112
-# ────────────────────────────────────────────────
-# Savings: 30 tokens (38.5%)
+print(f"JSON: {json_tokens} tokens")
+print(f"TOON: {toon_tokens} tokens")
+print(f"Savings: {savings:.1f}%")
 ```
 
 ### Integration Pattern
 
-Use token counting in production to monitor savings:
+Pick the encoding at the point you send data to the LLM:
 
 ```python
 import json
-from toon_format import encode, count_tokens
+from toon_format import encode
 
-def send_to_llm(data, use_toon=True):
-    """Send data to LLM with optional TOON encoding."""
+def format_for_llm(data, use_toon=True):
+    """Format data for an LLM prompt with optional TOON encoding."""
     if use_toon:
-        formatted = encode(data)
-        format_type = "TOON"
-    else:
-        formatted = json.dumps(data, indent=2)
-        format_type = "JSON"
-
-    tokens = count_tokens(formatted)
-    print(f"[{format_type}] Sending {tokens} tokens")
-
-    # Your LLM API call here
-    # response = openai.ChatCompletion.create(...)
-
-    return formatted, tokens
+        return encode(data)
+    return json.dumps(data, indent=2)
 
 # Example usage
 data = {"items": [{"id": 1}, {"id": 2}]}
-formatted, token_count = send_to_llm(data, use_toon=True)
+prompt_payload = format_for_llm(data, use_toon=True)
 ```
 
 ---

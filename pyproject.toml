@@ -33,14 +33,10 @@ Repository = "https://github.com/toon-format/toon-python"
 Documentation = "https://github.com/toon-format/spec"
 "Bug Tracker" = "https://github.com/toon-format/toon-python/issues"
 
-[project.scripts]
-toon = "toon_format.cli:main"
-
 [project.optional-dependencies]
 pydantic = ["pydantic>=2.0.0"]
 
 [dependency-groups]
-benchmark = ["tiktoken>=0.4.0"]
 dev = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
