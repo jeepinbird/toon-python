@@ -7,7 +7,7 @@
 
 Compact, human-readable serialization format for LLM contexts with **30-60% token reduction** vs JSON. Combines YAML-like indentation with CSV-like tabular arrays. Working towards full compatibility with the [official TOON specification](https://github.com/toon-format/spec).
 
-**Key Features:** Minimal syntax • Tabular arrays for uniform data • Array length validation • Python 3.8+ • Comprehensive test coverage.
+**Key Features:** Minimal syntax • Tabular arrays for uniform data • Array length validation • Python 3.8+ • Comprehensive test coverage • Zero runtime dependencies.
 
 ```bash
 # Beta published to PyPI - install from source:
@@ -40,21 +40,6 @@ decode("items[2]: apple,banana")
 # {'items': ['apple', 'banana']}
 ```
 
-## CLI Usage
-
-```bash
-# Auto-detect format by extension
-toon input.json -o output.toon      # Encode
-toon data.toon -o output.json       # Decode
-echo '{"x": 1}' | toon -            # Stdin/stdout
-
-# Options
-toon data.json --encode --delimiter "\t" --length-marker
-toon data.toon --decode --no-strict --indent 4
-```
-
-**Options:** `-e/--encode` `-d/--decode` `-o/--output` `--delimiter` `--indent` `--length-marker` `--no-strict`
-
 ## API Reference
 
 ### `encode(value, options=None)` → `str`
@@ -77,35 +62,6 @@ decode("id: 123", {"indent": 2, "strict": True})
 **Options:**
 - `indent`: Expected indent size (default: `2`)
 - `strict`: Validate syntax, lengths, delimiters (default: `True`)
-
-### Token Counting & Comparison
-
-Measure token efficiency and compare formats:
-
-```python
-from toon_format import estimate_savings, compare_formats, count_tokens
-
-# Measure savings
-data = {"users": [{"id": 1, "name": "Alice"}, {"id": 2, "name": "Bob"}]}
-result = estimate_savings(data)
-print(f"Saves {result['savings_percent']:.1f}% tokens")  # Saves 42.3% tokens
-
-# Visual comparison
-print(compare_formats(data))
-# Format Comparison
-# ────────────────────────────────────────────────
-# Format      Tokens    Size (chars)
-# JSON            45             123
-# TOON            28              85
-# ────────────────────────────────────────────────
-# Savings: 17 tokens (37.8%)
-
-# Count tokens directly
-toon_str = encode(data)
-tokens = count_tokens(toon_str)  # Uses tiktoken (gpt5/gpt5-mini)
-```
-
-**Requires tiktoken:** `uv add tiktoken` (benchmark features are optional)
 
 ## Format Specification
 
@@ -169,7 +125,7 @@ git clone https://github.com/toon-format/toon-python.git
 cd toon-python
 uv sync
 
-# Run tests (792 tests, 91% coverage, 85% enforced)
+# Run tests (805 tests, 93% coverage, 85% enforced)
 uv run pytest --cov=toon_format --cov-report=term
 
 # Code quality
