@@ -24,6 +24,8 @@ New to TOON? Start here:
 Complete reference for all public functions and classes:
 - `encode()` - Convert Python to TOON
 - `decode()` - Convert TOON to Python
+- `encode_json()` - Convert a JSON string directly to TOON
+- `loads()` - Parse a JSON string into TOON-ready Python objects
 - `EncodeOptions` - Encoding configuration
 - `DecodeOptions` - Decoding configuration
 - `ToonDecodeError` - Error handling

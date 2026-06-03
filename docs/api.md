@@ -76,6 +76,66 @@ decode("  item: value", {"indent": 4, "strict": False})
 
 ---
 
+## JSON Interop
+
+Helpers for working directly with JSON strings, so raw JSON text (LLM tool
+outputs, REST API responses, logs) can go to TOON without a manual `json.loads`
+step. JSON `null` is mapped to Python `None`, which `encode()` renders as the
+TOON `null` literal.
+
+### `encode_json(json_string, options=None)`
+
+Encode a JSON string directly into TOON. Equivalent to
+`encode(loads(json_string), options)`.
+
+**Parameters:**
+- `json_string` (str): The JSON text to convert
+- `options` (EncodeOptions | dict, optional): Encoding options (see [`EncodeOptions`](#encodeoptions))
+
+**Returns:** `str` - The TOON-formatted string
+
+**Raises:**
+- `json.JSONDecodeError`: If `json_string` is not valid JSON
+
+**Example:**
+
+```python
+from toon_format import encode_json
+
+print(encode_json('{"name": "Alice", "mood": null, "tags": [1, null, 3]}'))
+# name: Alice
+# mood: null
+# tags[3]: 1,null,3
+```
+
+### `loads(json_string, **kwargs)`
+
+Parse a JSON string into TOON-ready Python objects. A thin wrapper around
+`json.loads()`; JSON `null` becomes `None`. Extra keyword arguments are
+forwarded to `json.loads`.
+
+**Parameters:**
+- `json_string` (str): The JSON text to parse
+- `**kwargs`: Forwarded to `json.loads` (e.g. `parse_float`)
+
+**Returns:** The parsed Python value
+
+**Raises:**
+- `json.JSONDecodeError`: If `json_string` is not valid JSON
+
+**Example:**
+
+```python
+from toon_format import loads, encode
+
+data = loads('{"b": [1, null, 3]}')
+# {'b': [1, None, 3]}
+print(encode(data))
+# b[3]: 1,null,3
+```
+
+---
+
 ## Options Classes
 
 ### `EncodeOptions`
