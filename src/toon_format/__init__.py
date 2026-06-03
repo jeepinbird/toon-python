@@ -23,11 +23,14 @@ Example:
 from .decoder import ToonDecodeError, decode
 from .encoder import encode
 from .types import DecodeOptions, Delimiter, DelimiterKey, EncodeOptions
+from .utils import encode_json, loads
 
 __version__ = "0.9.0-beta.1"
 __all__ = [
     "encode",
     "decode",
+    "encode_json",
+    "loads",
     "ToonDecodeError",
     "Delimiter",
     "DelimiterKey",

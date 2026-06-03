@@ -63,6 +63,26 @@ decode("id: 123", {"indent": 2, "strict": True})
 - `indent`: Expected indent size (default: `2`)
 - `strict`: Validate syntax, lengths, delimiters (default: `True`)
 
+### Working with JSON strings
+
+When data arrives as raw JSON text (LLM tool outputs, REST APIs, logs), skip the
+manual `json.loads` step. JSON `null` is handled as `None` automatically.
+
+```python
+from toon_format import encode_json, loads
+
+# JSON string straight to TOON
+encode_json('{"name": "Alice", "mood": null}')
+# name: Alice
+# mood: null
+
+# Parse JSON into TOON-ready Python objects (null -> None)
+loads('{"b": [1, null, 3]}')
+# {'b': [1, None, 3]}
+```
+
+`encode_json(json_string, options=None)` is equivalent to `encode(loads(json_string), options)`.
+
 ## Format Specification
 
 | Type | Example Input | TOON Output |
@@ -125,7 +145,7 @@ git clone https://github.com/toon-format/toon-python.git
 cd toon-python
 uv sync
 
-# Run tests (805 tests, 93% coverage, 85% enforced)
+# Run tests (818 tests, 93% coverage, 85% enforced)
 uv run pytest --cov=toon_format --cov-report=term
 
 # Code quality
